@@ -16,12 +16,26 @@ def all_coaches_view(request:HttpRequest):
         coaches = coaches.order_by("-avg_rating")
     elif rating_order == "low":
         coaches = coaches.order_by("avg_rating")
+ 
+    # فلترة السعر
+    price_order = request.GET.get("price", "all")
+    if price_order == "high":
+        coaches = coaches.order_by("-price")
+    elif price_order == "low":
+        coaches = coaches.order_by("price")
+    
+    # فلترة الخبرة
+    experience_order = request.GET.get("experience_years", "all")
+    if experience_order == "high":
+        coaches = coaches.order_by("-experience_years")
+    elif experience_order == "low":
+        coaches = coaches.order_by("experience_years")
 
     # Pagination
     page_number = request.GET.get("page", 1)
     paginator = Paginator(coaches, 6)
     coaches_page = paginator.get_page(page_number)
-    return render(request,"coaches/all_coaches.html",{"coaches":coaches,"coach_paga":coaches_page})
+    return render(request,"coaches/all_coaches.html",{"coaches":coaches,"coach_page":coaches_page, "selected_rating": rating_order ,"selected_price": price_order , "selected_experience": experience_order})
 
 def profile_coach_view(request:HttpRequest, coach_id:int):
     coach=Coach.objects.get(pk=coach_id)
@@ -34,7 +48,7 @@ def coach_update_view(request: HttpRequest, coach_id: int):
     except Coach.DoesNotExist:
         messages.error(request, "المدرب غير موجود", "alert-warning")   
          
-    if request.user != coach.user:
+    if request.user != coach.user and not request.user.is_staff:
         messages.warning(request,"فقط يمكن لصاحب الحساب التعديل","alert-warning")
         return redirect("main:home_veiw")
     

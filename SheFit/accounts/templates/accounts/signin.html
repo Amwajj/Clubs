@@ -26,6 +26,14 @@
             <button class="btn btn-dark w-100" type="submit">Sign In</button>
         </div>
     </form>
+      <div class="text-center mt-3">
+            <small class="text-muted">
+                ليس لديك حساب؟
+                <a href="{% url 'accounts:signup_view' %}" class="text-primary text-decoration-none">
+                    أنشئ حساب الان
+                </a>
+            </small>
+        </div>
 
 </section>
 {% endblock %}

@@ -12,6 +12,9 @@ class Coach(models.Model):
     phone = models.CharField(max_length=10)
     gym = models.ForeignKey(Gym, on_delete=models.SET_NULL, null=True, blank=True, related_name="coaches")
     avatar =models.ImageField(upload_to="images/" ,default='avatars/default.png')
+    about= models.TextField(default="")
+    price =models.FloatField(default=0.0)
+    website = models.URLField(max_length=300 , null=True, blank=True)
 
     def __str__(self):
         return self.user.username
@@ -26,7 +29,8 @@ class CoachComment(models.Model):
 
     TYPE_COMMENT = [
         ('inquiry','استفسار'),
-        ('previous_member', 'مشترك سابق')
+        ('previous_member', 'مشترك سابق'),
+        ('current_member', 'مشترك حالي')
     ]  
     coach=models.ForeignKey(Coach, on_delete=models.CASCADE)
     user =models.ForeignKey(User, on_delete=models.CASCADE)

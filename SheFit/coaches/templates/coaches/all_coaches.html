@@ -6,14 +6,29 @@
 
 {% block content %}
 
-<h1 class="mb-4">النوادي</h1>
-<form method="GET" class="d-flex gap-3 mb-4">
+<h1 class="mb-4">المدربين</h1>
+<form method="GET" class="d-flex flex-wrap gap-2 mb-4 align-items-center">
 
+    
     <!-- فلترة التقييم -->
     <select name="rating" class="form-select w-auto">
         <option value="all">التقييم (الكل)</option>
         <option value="high" {% if selected_rating == "high" %}selected{% endif %}>الأعلى تقييم</option>
         <option value="low" {% if selected_rating == "low" %}selected{% endif %}>الأقل تقييم</option>
+    </select>
+    
+    <!-- فلترة السعر -->
+    <select name="price" class="form-select w-auto">
+        <option value="all">السعر (الكل)</option>
+        <option value="high" {% if selected_price == "high" %}selected{% endif %}>الأعلى سعر</option>
+        <option value="low" {% if selected_price == "low" %}selected{% endif %}>الأقل سعر</option>
+    </select>
+    
+    <!-- فلترة الخبرة -->
+    <select name="experience_years" class="form-select w-auto">
+        <option value="all">الخبرة (الكل)</option>
+        <option value="high" {% if selected_experience == "high" %}selected{% endif %}>الأعلى خبرة</option>
+        <option value="low" {% if selected_experience == "low" %}selected{% endif %}>الأقل خبرة</option>
     </select>
 
     <!-- زر تطبيق الفلترة -->

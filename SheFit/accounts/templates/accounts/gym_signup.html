@@ -7,7 +7,7 @@
 <section class="d-flex justify-content-center align-items-center mt-5 mb-5">
     <div class="col-12 col-md-6">
         <div class="card shadow-sm p-4">
-            <h2 class="mb-4 text-center"><strong>إنشاء حساب للنادي</strong></h2>
+            <h2 class="mb-5 mt-3 text-center"><strong>إنشاء حساب للنادي</strong></h2>
         
 
         <form class="needs-validation" action="{% url 'accounts:gym_signup_view' %}" method="post" enctype="multipart/form-data" novalidate>
@@ -67,6 +67,14 @@
                 <button class="btn btn-dark w-100" type="submit">إنشاء حساب</button>
             </div>
         </form>
+          <div class="text-center mt-3">
+            <small class="text-muted">
+                هل لديك حساب؟
+                <a href="{% url 'accounts:signin_view' %}" class="text-primary text-decoration-none">
+                    سجلي دخول الان
+                </a>
+            </small>
+        </div>
         </div>
     </div>
 </section>

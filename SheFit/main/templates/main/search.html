@@ -1,0 +1,41 @@
+{% extends 'main/base.html' %}
+
+{% block title %}البحث{% endblock %}
+
+{% block content %}
+
+<h1 class="mb-4">نتائج البحث ({{total_count}})</h1>
+
+{% if gyms or coaches %}
+<h5>نتيجة البحث لـ {{request.GET.search}}</h5>
+
+{% include 'gyms/component/gyms_list.html' %}
+{% include 'coaches/component/coach_list.html' %}
+{% else %}
+<p class="">لا يوجد نتائج لعملية البحث:  "{{request.GET.search}}"</p>
+{% endif %}
+
+<div class="pagination d-flex justify-content-center mt-4">
+
+    {% if gyms.has_previous %}
+        <a href="?page=1">الأولى</a>
+        <a href="?page={{ gyms.previous_page_number }}">السابق</a>
+    {% endif %}
+
+    {% for page in gyms.paginator.page_range %}
+        {% if page == gyms.number %}
+            <a class="active-page">{{ page }}</a>
+        {% else %}
+            <a href="?page={{ page }}">{{ page }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if gyms.has_next %}
+        <a href="?page={{ gyms.next_page_number }}">التالي</a>
+        <a href="?page={{ gyms.paginator.num_pages }}">الأخيرة</a>
+    {% endif %}
+
+</div>
+
+
+{% endblock %}
