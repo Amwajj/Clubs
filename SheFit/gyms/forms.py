@@ -5,7 +5,16 @@ from .models import Gym, GymComment
 class GymForm(forms.ModelForm):
     class Meta:
         model = Gym
-        fields = "__all__"
+        fields = [
+                    "name",
+                    "image",
+                    "hoods",
+                    "has_coach",
+                    "about",
+                    "monthly_price",
+                    "website",
+                ]
+
         widgets = {
             'about': forms.Textarea(attrs={"class": "form-control", "rows": 4}),
             'hoods': forms.SelectMultiple(attrs={"class": "form-control"}),

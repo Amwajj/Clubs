@@ -19,7 +19,7 @@
 
 
                         <!-- الأحياء -->
-                        <div class="d-flex flex-wrap gap-2 justify-content-end">
+                        <div class="d-flex flex-wrap gap-2 justify-content-start">
                             {% for h in gym.hoods.all %}
                             <a href="{% url 'gyms:all_gyms_view' h.name %}">
                                 <span class="badge text-white px-3 py-1"
