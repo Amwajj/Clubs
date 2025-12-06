@@ -73,26 +73,26 @@
 
                 <div class="d-flex justify-content-between align-items-center">
 
-                {% if request.user == gym.user or request.user.is_staff %}
-                <div class="d-flex gap-3 mt-4">
-                    <a href="{% url 'gyms:gym_update_view' gym.id %}" class="btn btn-warning px-4">تعديل</a>
-                    <a href="{% url 'gyms:gym_delete_view' gym.id %}" class="btn btn-danger px-4"
-                        onclick="return confirm('هل تريدين حذف هذا النادي فعلا؟ ');">حذف</a>
-                </div>
-                {% endif %}
+                    {% if request.user == gym.user or request.user.is_staff %}
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="{% url 'gyms:gym_update_view' gym.id %}" class="btn btn-warning px-4">تعديل</a>
+                        <a href="{% url 'gyms:gym_delete_view' gym.id %}" class="btn btn-danger px-4"
+                            onclick="return confirm('هل تريدين حذف هذا النادي فعلا؟ ');">حذف</a>
+                    </div>
+                    {% endif %}
 
 
-                {% if gym.website %}
-                <a href="{{ gym.website }}" target="_blank" class="btn btn-primary mt-3">
-                    زيارة موقع النادي
-                </a>
-                {% endif %}
+                    {% if gym.website %}
+                    <a href="{{ gym.website }}" target="_blank" class="btn btn-primary mt-3">
+                        زيارة الموقع الرسمي للنادي
+                    </a>
+                    {% endif %}
                 </div>
 
 
                 <!-- الاشتراك للكوتش في النادي  -->
 
-                {% if request.user.is_authenticated and request.user.coach %}
+                {% if gym.has_coach and request.user.is_authenticated and request.user.coach %}
 
                 {% if request.user.coach.gym == gym %}
                 <!-- لو المدرب مشترك -->
@@ -114,13 +114,12 @@
                 {% endif %}
 
                 {% endif %}
-
             </div>
         </div>
 
         <!-- المدربات / الفروع -->
         <div class="col-md-6">
-
+            {% if gym.has_coach %}
             <!-- مدربات -->
             <div class="p-4 rounded shadow-sm border bg-white mb-4">
                 <h4 class="fw-bold mb-3">مدربات النادي</h4>
@@ -151,6 +150,8 @@
                 {% endfor %}
 
             </div>
+
+            {% endif %}
 
             <!-- فروع -->
             <div class="p-4 rounded shadow-sm border bg-white">
@@ -186,7 +187,7 @@
         {% for c in parent_comments %}
         {% include "gyms/component/comment_block.html" with comment=c %}
         {% empty %}
-        <p class="text-muted">لا يوجد تعليقات بعد.</p>
+        <p class="text-muted">لا يوجد تعليقات بعد! كوني أول من يترك تعليق .</p>
         {% endfor %}
     </div>
 

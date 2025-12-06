@@ -7,6 +7,7 @@ from .models import Gym, Hood, GymComment
 from .forms import GymForm
 from coaches.models import Coach
 
+
 # Create your views here. 
 
 
@@ -106,7 +107,7 @@ def gym_detail_view(request: HttpRequest, gym_id: int):
             "gym": gym,
             "average_rating": avg["rating__avg"],
             "coaches": coaches,
-            "parent_comments": parent_comments,   # هذا المهم
+            "parent_comments": parent_comments,   
         },
     )
 
@@ -114,50 +115,31 @@ def gym_detail_view(request: HttpRequest, gym_id: int):
 
 def gym_update_view(request: HttpRequest, gym_id: int):
 
-    # نجيب بيانات النادي
     gym = Gym.objects.get(pk=gym_id)
-    hoods = Hood.objects.all()   # نعرض كل الأحياء
+    hoods = Hood.objects.all()
 
-
-    # بس الستاف يقدرون يعدلون
-    if not request.user.is_staff and request.user != gym.user :
-        messages.warning(request, "Only staff can update gym", "alert-warning")
+    if not request.user.is_staff and request.user != gym.user:
+        messages.warning(request, "ليس لديك الصلاحية لتحديث بيانات النادي", "alert-warning")
         return redirect("main:home_view")
 
-
     if request.method == "POST":
+        form = GymForm(request.POST, request.FILES, instance=gym)
 
-        # لو غيّر الصورة
-        if "image" in request.FILES:
-            gym.image = request.FILES["image"]
-        # تحديث الاسم
-        gym.name = request.POST.get("name")
+        if form.is_valid():
+            form.save()
+            messages.success(request, "تم تحديث بيانات النادي بنجاح", "alert-success")
+            return redirect("gyms:gym_detail_view", gym_id=gym.id)
 
-
-        # تحديث الأحياء (ManyToMany)
-        selected_hoods = request.POST.getlist("hoods")
-        gym.hoods.set(selected_hoods)
-
-        # تحديث هل يوجد مدربين
-        gym.has_coach = True if request.POST.get("has_coach") == "true" else False
-
-        # تحديث الوصف
-        gym.about = request.POST.get("about")
-
-        # السعر و الموقع 
-        gym.monthly_price = request.POST.get("monthly_price")   
-        gym.website = request.POST.get("website") 
-
-        # نحفظ التعديل
-        gym.save()
-
-        messages.success(request, "تم تحديث بيانات النادي بنجاح", "alert-success")
-        return redirect("gyms:gym_detail_view", gym_id=gym.id)
+    else:
+        form = GymForm(instance=gym)
 
     return render(request, "gyms/gym_update.html", {
         "gym": gym,
         "hoods": hoods,
+        "form": form, 
     })
+
+
 
 def gym_delete_view(request: HttpRequest, gym_id: int):
 
@@ -167,15 +149,15 @@ def gym_delete_view(request: HttpRequest, gym_id: int):
         # نحاول نجيب النادي ونحذفه
         gym = Gym.objects.get(pk=gym_id)
         gym.delete()
-        messages.success(request, "Deleted gym successfully", "alert-success")
+        messages.success(request, "تم حذف النادي بنجاح", "alert-success")
 
     except Exception as e:
         # لو صار خطأ
-        messages.error(request, "Couldn't delete gym", "alert-danger")
+        messages.error(request, "هناك مشكلة! لم يتم حذف النادي", "alert-danger")
 
  # فقط الإدمن يقدر يحذف
     if not request.user.is_staff and request.user != gym.user :
-        messages.warning(request, "only staff can delete gym", "alert-warning")
+        messages.warning(request, "ليس لديك الصلاحية لحذف النادي", "alert-warning")
         return redirect("main:home_view")
     # نرجع للصفحة الرئيسية
     return redirect("main:home_view")
@@ -183,7 +165,7 @@ def gym_delete_view(request: HttpRequest, gym_id: int):
 def add_comment_view(request: HttpRequest, gym_id: int):
 
     if not request.user.is_authenticated:
-        messages.error(request, "يجب تسجيل الدخول أولاً")
+        messages.error(request, "يجب تسجيل الدخول أولاً", "alert-danger")
         return redirect("accounts:sign_in")
 
     if request.method == "POST":
@@ -216,7 +198,7 @@ def add_comment_view(request: HttpRequest, gym_id: int):
             reply_to=reply_to,
         )
 
-        messages.success(request, "تم إضافة تعليقك بنجاح ❤️", "alert-success")
+        messages.success(request, "تم إضافة تعليقك بنجاح ", "alert-success")
 
     return redirect("gyms:gym_detail_view", gym_id=gym_id)
 
@@ -240,8 +222,8 @@ def add_reply_view(request: HttpRequest, comment_id: int):
             user=request.user, # اللي كتب الرد
             parent=parent_comment, # هذا أهم شي الربط كرد
             comment=request.POST["reply_text"],  # نص الرد
-            comment_type=None,  # نخلي نوعه نفس نوع التعليق الأساسي
-            rating=None                          # الرد ما له تقييم
+            comment_type=None, # نخلي نوعه نفس نوع التعليق الأساسي
+            rating=None # الرد ما له تقييم
         )
 
         messages.success(request, "تم إضافة الرد بنجاح", "alert-success")
@@ -253,14 +235,14 @@ def add_reply_view(request: HttpRequest, comment_id: int):
 
 def toggle_coach_gym(request, gym_id):
     if not request.user.is_authenticated:
-        messages.error(request, "يجب تسجيل الدخول.")
+        messages.error(request, "يجب تسجيل الدخول.", "alert-danger")
         return redirect("accounts:sign_in")
 
     # المدرب نفسه
     try:
         coach = request.user.coach
     except:
-        messages.error(request, "هذا الخيار خاص بالمدربين فقط.")
+        messages.error(request, "هذا الخيار خاص بالمدربين فقط.", "alert-danger")
         return redirect("gyms:gym_detail_view", gym_id=gym_id)
 
     gym = get_object_or_404(Gym, pk=gym_id)
@@ -269,17 +251,17 @@ def toggle_coach_gym(request, gym_id):
     if coach.gym is None:
         coach.gym = gym
         coach.save()
-        messages.success(request, f"تم انتسابك لنادي {gym.user.username} بنجاح!")
+        messages.success(request, f"تم انتسابك لنادي {gym.user.username} بنجاح!", "alert-success")
     
     # لو المدرب منتسب لنفس النادي  يلغي
     elif coach.gym == gym:
         coach.gym = None
         coach.save()
-        messages.success(request, "تم إلغاء الانتساب من النادي.")
+        messages.success(request, "تم إلغاء الانتساب من النادي.", "alert-success")
 
     # لو المدرب منتسب لنادي آخر
     else:
-        messages.error(request, "لا يمكنك الانتساب لأكثر من نادي .")
+        messages.error(request, "لا يمكنك الانتساب لأكثر من نادي .", "alert-danger")
 
     return redirect("gyms:gym_detail_view", gym_id=gym_id)
 
@@ -288,13 +270,12 @@ def toggle_coach_gym(request, gym_id):
 def delete_comment_view(request, comment_id):
     comment = get_object_or_404(GymComment, pk=comment_id)
 
-    # السماح بالحذف فقط لصاحبه، أو صاحب النادي، أو موظف
     if request.user != comment.user and request.user != comment.gym.user and not request.user.is_staff:
-        messages.error(request, "لا يمكنك حذف هذا التعليق.")
+        messages.error(request, "لا يمكنك حذف هذا التعليق.", "alert-danger")
         return redirect("gyms:gym_detail_view", gym_id=comment.gym.id)
 
     gym_id = comment.gym.id
     comment.delete()
 
-    messages.success(request, "تم حذف التعليق.")
+    messages.success(request, "تم حذف التعليق.", "alert-success")
     return redirect("gyms:gym_detail_view", gym_id=gym_id)

@@ -20,6 +20,13 @@
 
                 {% csrf_token %}
 
+                {% if form and form.errors %}
+                <div class="alert alert-danger">
+                    يوجد خطأ في بعض الحقول، يرجى مراجعتها وإعادة المحاولة.
+                </div>
+                {% endif %}
+
+
 
                 <input type="text" placeholder="أسم النادي" name="name" class="form-control" value="{{gym.name}}" />
 
@@ -38,7 +45,7 @@
 
                         <!-- حقل رفع الصورة -->
                         <div class="col-12 col-md-8">
-                            <input type="file" name="image" class="form-control">
+                            <input type="file" name="image" class="form-control" accept="image/*">
                         </div>
 
                     </div>
