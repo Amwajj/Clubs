@@ -7,30 +7,43 @@
         <div class="d-flex align-items-start gap-3">
 
             <!-- صورة المستخدم -->
-            <img src="{% if comment.user.coach %}{{ comment.user.coach.avatar.url }}
-         {% elif comment.user.gym %}{{ comment.user.gym.image.url }} 
-         {% else %}/static/images/default-user.png{% endif %}" class="rounded-circle" width="77" height="77">
+            <img src="
+{% if comment.user.coach %}
+    {{ comment.user.coach.avatar.url }}
+{% elif comment.user.gym %}
+    {{ comment.user.gym.image.url }}
+{% elif comment.user.trainee %}
+    {{ comment.user.trainee.avatar.url }}
+{% else %}
+    /static/images/default-user.jpg
+{% endif %}" class="rounded-circle" width="77" height="77">
+
 
             <div class="flex-grow-1">
 
                 <div class="d-flex justify-content-between align-items-center mb-1">
 
                     <!-- اليوزر ولنك له -->
-                    <h6 class="fw-bold m-0">
+                    {% with profile_url="" %}
+                    {% if comment.user.coach %}
+                    {% url 'coaches:profile_coach_view' comment.user.coach.id as profile_url %}
+                    {% elif comment.user.gym %}
+                    {% url 'gyms:gym_detail_view' comment.user.gym.id as profile_url %}
+                    {% elif comment.user.trainee %}
+                    {% url 'accounts:profile_trainee_view' comment.user.trainee.id as profile_url %}
+                    {% endif %}
 
-                        <a href="
-        {% if comment.user.coach %}
-            {% url 'coaches:profile_coach_view' comment.user.coach.id %}
-        {% elif comment.user.gym %}
-            {% url 'gyms:gym_detail_view' comment.user.gym.id %}
-        {% else %}
-            #هنا رابط اليوزر اذا سوته امواج
-        {% endif %}
-    " class="text-decoration-none" style="color: var(--text-dark);">
+                    <h6 class="fw-bold m-0">
+                        {% if profile_url %}
+                        <a href="{{ profile_url }}" class="text-decoration-none" style="color: var(--text-dark);">
                             {{ comment.user.username }}
                         </a>
-
+                        {% else %}
+                        {{ comment.user.username }}
+                        {% endif %}
                     </h6>
+                    {% endwith %}
+
 
 
 
@@ -86,7 +99,7 @@
                     <textarea name="comment" class="form-control mb-2" rows="2" placeholder="اكتبي ردك..."
                         required></textarea>
                     <button class="btn btn-primary btn-sm comment-btn">إرسال</button>
-                </form>
+                    </form>
                 {% endif %}
 
                 <!-- زر عرض الردود -->
