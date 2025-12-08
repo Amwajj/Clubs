@@ -4,6 +4,6 @@
         "builder": "NIXPACKS"
     },
     "deploy": {
-        "startCommand": "cd Clubs && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn Clubs.wsgi"
+        "startCommand": "cd SheFit && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn SheFit.wsgi"
     }
 }
